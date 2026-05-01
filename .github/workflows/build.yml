@@ -2,7 +2,7 @@ name: Build APK
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
 
 permissions:
   contents: write
@@ -20,35 +20,35 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install SDK platform & build-tools
+      - name: Setup Gradle 8.6
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.6'
+
+      - name: Setup Android SDK
         run: |
-          yes | sdkmanager "platforms;android-34" "build-tools;34.0.0" 2>/dev/null || true
-
-      - name: Create local.properties
-        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-
-      - name: Generate Gradle wrapper
-        run: gradle wrapper --gradle-version 8.6
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+          SDK_ROOT=/usr/local/lib/android/sdk
+          SDK_TOOLS="$SDK_ROOT/cmdline-tools/latest/bin"
+          yes | "$SDK_TOOLS/sdkmanager" --licenses > /dev/null 2>&1 || true
+          "$SDK_TOOLS/sdkmanager" "platforms;android-34" "build-tools;34.0.0"
+          echo "sdk.dir=$SDK_ROOT" > local.properties
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> $GITHUB_ENV
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
 
-      - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk RepetitionEspacee.apk
-
-      - name: Create GitHub Release
+      - name: Publish APK to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: "Version ${{ github.run_number }}"
+          tag_name: latest
+          name: "Répétition Espacée — Dernière version"
           body: |
-            ## Répétition Espacée — APK Android
+            ## Télécharger l'APK Android
 
-            📥 Télécharge **RepetitionEspacee.apk** ci-dessous directement sur ton téléphone.
+            👇 Clique sur **RepetitionEspacee.apk** ci-dessous pour le télécharger sur ton téléphone.
 
-            > Active « Sources inconnues » dans Paramètres → Sécurité avant d'installer.
-          files: RepetitionEspacee.apk
+            **Avant d'installer :**
+            Paramètres → Sécurité → Active « Sources inconnues »
+          files: app/build/outputs/apk/debug/app-debug.apk
           make_latest: true
+          prerelease: false
