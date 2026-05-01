@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Répétition Espacée</string>
+    <string name="empty_state">Aucune session.\nAppuyez sur + pour commencer.</string>
+    <string name="add_session">Ajouter une session</string>
+    <string name="hint_book">Nom du livre</string>
+    <string name="hint_pages">Nombre de pages apprises</string>
+    <string name="hint_repetitions">Nombre de répétitions</string>
+    <string name="hint_mastery">Degré de maîtrise</string>
+    <string name="delete">Supprimer</string>
+</resources>
