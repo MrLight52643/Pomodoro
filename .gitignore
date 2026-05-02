@@ -10,3 +10,7 @@
 *.keystore
 !debug.keystore
 app/build/
+
+# Local signing material
+keystore.properties
+*.jks
